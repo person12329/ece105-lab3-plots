@@ -233,3 +233,63 @@ def plot_boxplot(ax: plt.Axes, sensor_a: np.ndarray, sensor_b: np.ndarray) -> No
     ax.set_title("Side-by-side box plot: Sensor A vs Sensor B")
     ax.legend()
     ax.grid(True, linestyle="--", alpha=0.3)
+# Create main() that generates data, creates a 1x3 subplot figure,
+# calls each plot function, adjusts layout, and saves as sensor_analysis.png
+# at 150 DPI with tight bounding box.
+
+def main(seed: int | None = 7336, outdir: str | os.PathLike = '.', show: bool = False) -> None:
+    """Generate data and produce plots.
+
+    Parameters
+    ----------
+    seed : int or None, optional
+        RNG seed passed to ``generate_data``. Default is 7336.
+    outdir : str or os.PathLike, optional
+        Directory where generated PNG files will be written. Defaults to current directory.
+    show : bool, optional
+        If True, display the figures interactively using ``plt.show()``.
+
+    Returns
+    -------
+    None
+    """
+    outdir = Path(outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    t, sensor_a, sensor_b = generate_data(seed)
+
+    fig, axs = plt.subplots(1, 3, figsize=(15, 4))
+    plot_scatter(axs[0], t, sensor_a, sensor_b)
+    plot_histogram(axs[1], sensor_a, sensor_b)
+    plot_boxplot(axs[2], sensor_a, sensor_b)
+    fig.tight_layout()
+    fig.savefig(outdir / "sensor_plots_combined.png", dpi=150)
+
+    fig2, ax2 = plt.subplots(figsize=(6, 4))
+    plot_scatter(ax2, t, sensor_a, sensor_b)
+    fig2.tight_layout(); fig2.savefig(outdir / "sensor_scatter.png", dpi=150)
+
+    fig3, ax3 = plt.subplots(figsize=(6, 4))
+    plot_histogram(ax3, sensor_a, sensor_b)
+    fig3.tight_layout(); fig3.savefig(outdir / "sensor_histogram.png", dpi=150)
+
+    fig4, ax4 = plt.subplots(figsize=(6, 4))
+    plot_boxplot(ax4, sensor_a, sensor_b)
+    fig4.tight_layout(); fig4.savefig(outdir / "sensor_boxplot.png", dpi=150)
+
+    print(f"Wrote plots to: {outdir}")
+
+    if show:
+        plt.show()
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser(description="Generate sensor plots.")
+    parser.add_argument('--seed', type=int, default=7336, help='RNG seed (default: 7336)')
+    parser.add_argument('--outdir', type=str, default='.', help='Output directory for PNG files')
+    parser.add_argument('--show', action='store_true', help='Display plots interactively')
+    args = parser.parse_args()
+
+    main(seed=args.seed, outdir=args.outdir, show=args.show)
+
