@@ -106,3 +106,130 @@ def plot_scatter(ax: plt.Axes, t: np.ndarray, sensor_a: np.ndarray, sensor_b: np
     ymax = float(max(sensor_a.max(), sensor_b.max()))
     padding = 0.05 * (ymax - ymin) if ymax > ymin else 1.0
     ax.set_ylim(ymin - padding, ymax + padding)
+
+    import numpy as np
+import matplotlib.pyplot as plt
+
+def plot_scatter(ax: plt.Axes, t: np.ndarray, sensor_a: np.ndarray, sensor_b: np.ndarray) -> None:
+    """Plot sensor readings as a scatter plot on an existing Axes.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes to draw on (modified in place).
+    t : numpy.ndarray, shape (n,)
+        Timestamps for readings.
+    sensor_a : numpy.ndarray, shape (n,)
+        Sensor A temperature readings.
+    sensor_b : numpy.ndarray, shape (n,)
+        Sensor B temperature readings.
+
+    Returns
+    -------
+    None
+    """
+    t = np.asarray(t)
+    sensor_a = np.asarray(sensor_a)
+    sensor_b = np.asarray(sensor_b)
+
+    if t.shape != sensor_a.shape or t.shape != sensor_b.shape:
+        raise ValueError("t, sensor_a, and sensor_b must have the same shape")
+
+    ax.scatter(t, sensor_a, label="Sensor A", color="C0", alpha=0.75,
+               edgecolors="k", linewidths=0.4, s=36, zorder=3)
+    ax.scatter(t, sensor_b, label="Sensor B", color="C1", alpha=0.75,
+               edgecolors="k", linewidths=0.4, s=36, marker="s", zorder=3)
+
+    ax.set_xlabel("Time (s)")
+    ax.set_ylabel("Temperature (°C)")
+    ax.set_title("Sensor temperature readings over time")
+    ax.legend()
+    ax.grid(True, linestyle="--", alpha=0.4, zorder=0)
+
+    ymin = float(min(sensor_a.min(), sensor_b.min()))
+    ymax = float(max(sensor_a.max(), sensor_b.max()))
+    padding = 0.05 * (ymax - ymin) if ymax > ymin else 1.0
+    ax.set_ylim(ymin - padding, ymax + padding)
+
+
+def plot_histogram(ax: plt.Axes, sensor_a: np.ndarray, sensor_b: np.ndarray, bins: int = 30) -> None:
+    """Draw an overlaid histogram of Sensor A and Sensor B temperature distributions.
+
+    Modifies `ax` in place and returns None.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes to draw on (modified in place).
+    sensor_a : numpy.ndarray, shape (n,)
+        Sensor A temperature readings.
+    sensor_b : numpy.ndarray, shape (n,)
+        Sensor B temperature readings.
+    bins : int, optional
+        Number of histogram bins (default is 30).
+
+    Returns
+    -------
+    None
+    """
+    sensor_a = np.asarray(sensor_a)
+    sensor_b = np.asarray(sensor_b)
+
+    ax.hist(sensor_a, bins=bins, alpha=0.5, label="Sensor A", color="C0", edgecolor="k")
+    ax.hist(sensor_b, bins=bins, alpha=0.5, label="Sensor B", color="C1", edgecolor="k")
+
+    mean_a = float(np.mean(sensor_a))
+    mean_b = float(np.mean(sensor_b))
+    ax.axvline(mean_a, color="C0", linestyle="--", linewidth=1.5, label="Mean A")
+    ax.axvline(mean_b, color="C1", linestyle="--", linewidth=1.5, label="Mean B")
+
+    ax.set_xlabel("Temperature (°C)")
+    ax.set_ylabel("Count")
+    ax.set_title("Overlaid histogram of Sensor A and Sensor B")
+    ax.legend()
+    ax.grid(True, linestyle="--", alpha=0.3)
+
+
+def plot_boxplot(ax: plt.Axes, sensor_a: np.ndarray, sensor_b: np.ndarray) -> None:
+    """Draw side-by-side box plots comparing Sensor A and Sensor B.
+
+    Modifies `ax` in place and returns None.
+
+    Parameters
+    ----------
+    ax : matplotlib.axes.Axes
+        Axes to draw on (modified in place).
+    sensor_a : numpy.ndarray, shape (n,)
+        Sensor A temperature readings.
+    sensor_b : numpy.ndarray, shape (n,)
+        Sensor B temperature readings.
+
+    Returns
+    -------
+    None
+    """
+    sensor_a = np.asarray(sensor_a)
+    sensor_b = np.asarray(sensor_b)
+
+    data = [sensor_a, sensor_b]
+    labels = ["Sensor A", "Sensor B"]
+
+    bp = ax.boxplot(data, labels=labels, notch=True, patch_artist=True,
+                    showmeans=True, widths=0.6)
+
+    colors = ["C0", "C1"]
+    for box, color in zip(bp["boxes"], colors):
+        box.set(facecolor=color, alpha=0.5, edgecolor="k")
+
+    for median in bp.get("medians", []):
+        median.set(color="black", linewidth=1.5)
+    for mean_marker in bp.get("means", []):
+        mean_marker.set(marker="D", markeredgecolor="black", markerfacecolor="white", markersize=6)
+
+    overall_mean = float(np.mean(np.concatenate(data)))
+    ax.axhline(overall_mean, linestyle="--", color="grey", linewidth=1.2, label="Overall mean")
+
+    ax.set_ylabel("Temperature (°C)")
+    ax.set_title("Side-by-side box plot: Sensor A vs Sensor B")
+    ax.legend()
+    ax.grid(True, linestyle="--", alpha=0.3)
