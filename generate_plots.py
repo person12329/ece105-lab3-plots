@@ -13,8 +13,10 @@ Usage
 # Use NumPy-style docstring with Parameters and Returns sections.
 from __future__ import annotations
 import numpy as np
-
-
+import argparse
+import os
+import matplotlib.pyplot as plt
+from pathlib import Path
 def generate_data(seed: int | None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Generate synthetic timestamps and two sensor temperature arrays.
 
@@ -107,8 +109,7 @@ def plot_scatter(ax: plt.Axes, t: np.ndarray, sensor_a: np.ndarray, sensor_b: np
     padding = 0.05 * (ymax - ymin) if ymax > ymin else 1.0
     ax.set_ylim(ymin - padding, ymax + padding)
 
-    import numpy as np
-import matplotlib.pyplot as plt
+    
 
 def plot_scatter(ax: plt.Axes, t: np.ndarray, sensor_a: np.ndarray, sensor_b: np.ndarray) -> None:
     """Plot sensor readings as a scatter plot on an existing Axes.
@@ -284,7 +285,7 @@ def main(seed: int | None = 7336, outdir: str | os.PathLike = '.', show: bool = 
 
 
 if __name__ == '__main__':
-    import argparse
+    
     parser = argparse.ArgumentParser(description="Generate sensor plots.")
     parser.add_argument('--seed', type=int, default=7336, help='RNG seed (default: 7336)')
     parser.add_argument('--outdir', type=str, default='.', help='Output directory for PNG files')
