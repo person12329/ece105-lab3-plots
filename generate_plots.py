@@ -259,10 +259,10 @@ def main(seed: int | None = 7336, outdir: str | os.PathLike = '.', show: bool = 
 
     t, sensor_a, sensor_b = generate_data(seed)
 
-    fig, axs = plt.subplots(1, 3, figsize=(15, 4))
-    plot_scatter(axs[0], t, sensor_a, sensor_b)
-    plot_histogram(axs[1], sensor_a, sensor_b)
-    plot_boxplot(axs[2], sensor_a, sensor_b)
+    fig, axs = plt.subplots(2, 2, figsize=(15, 4))
+    plot_scatter(axs[0, 0], t, sensor_a, sensor_b)
+    plot_histogram(axs[0, 1], sensor_a, sensor_b)
+    plot_boxplot(axs[1, 0], sensor_a, sensor_b)
     fig.tight_layout()
     fig.savefig(outdir / "sensor_plots_combined.png", dpi=150)
 
